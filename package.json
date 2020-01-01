@@ -1,0 +1,19 @@
+{
+  "name": "jsx-static-scripts",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsx-static/jsx-static-scripts.git"
+  },
+  "author": "Alexa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jsx-static/jsx-static-scripts/issues"
+  },
+  "homepage": "https://github.com/jsx-static/jsx-static-scripts#readme"
+}

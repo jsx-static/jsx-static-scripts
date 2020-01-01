@@ -6,6 +6,8 @@ import MemoryFileSystem from "memory-fs"
 import http from "http"
 import open from "open"
 import { JsxsConfig } from "jsx-static/lib/config"
+import portFinder from "portfinder"
+
 
 const sockInjection = `
 <script src="sockjs.min.js"></script>
@@ -60,5 +62,8 @@ export function run(config: JsxsConfig) {
     prefix: "/echo"
   })
 
-  httpServer.listen(8000, () => open("http://localhost:8000"))
+  portFinder.getPort((err, port) => {
+    if(err) console.error(err)
+    httpServer.listen(port, () => open(`http://localhost:${port}`))
+  })
 }

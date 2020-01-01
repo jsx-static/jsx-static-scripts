@@ -26,14 +26,28 @@ sockjs.onclose = function() { console.log('socket disconnected') }
 
 export function run(config: JsxsConfig) {
   const serverFs = new MemoryFileSystem()
-  jsxs.watch({
+  
+  jsxs.build({
     outputFs: serverFs,
     outputDir: "/",
     hooks: {
-      postProcess: src => src + sockInjection,
-      postEmit: () => connections.forEach(conn => conn.emit("data", { msg: "reload" }))
+      postEmit: () => {
+        portFinder.getPort((err, port) => {
+          if(err) console.error(err)
+          httpServer.listen(port, () => open(`http://localhost:${port}`))
+        })
+        jsxs.watch({
+          outputFs: serverFs,
+          outputDir: "/",
+          hooks: {
+            postProcess: src => src + sockInjection,
+            postEmit: () => connections.forEach(conn => conn.emit("data", { msg: "reload" }))
+          }
+        })
+      }
     }
   })
+
   
   const echo = sockjsNode.createServer({ 
     prefix: "/echo",
@@ -44,7 +58,10 @@ export function run(config: JsxsConfig) {
   
   server.get("/*", (req, res) => {
     res.setHeader("Content-Type", "text/html")
-    res.send(serverFs.readFileSync(req.path))
+    if(serverFs.existsSync(req.path)) res.send(serverFs.readFileSync(req.path))
+    else if(serverFs.existsSync(req.path + ".html")) res.send(serverFs.readFileSync(req.path + ".html"))
+    else if(serverFs.existsSync(req.path + "index.html")) res.send(serverFs.readFileSync(req.path + "index.html"))
+    else res.send("404 you doof")
   })
   
   const httpServer = http.createServer(server)
@@ -60,10 +77,5 @@ export function run(config: JsxsConfig) {
 
   echo.installHandlers(httpServer, {
     prefix: "/echo"
-  })
-
-  portFinder.getPort((err, port) => {
-    if(err) console.error(err)
-    httpServer.listen(port, () => open(`http://localhost:${port}`))
   })
 }

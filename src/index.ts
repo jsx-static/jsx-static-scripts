@@ -12,15 +12,16 @@ import portFinder from "portfinder"
 const sockInjection = `
 <script src="sockjs.min.js"></script>
 <script>
-var sockjs_url = '/echo'
-var sockjs = new SockJS(sockjs_url)
-
-sockjs.onopen = function() { console.log('opened socket', sockjs.protocol) }
-sockjs.onmessage = function(e) {
-  console.log(e)
-  if(JSON.parse(e.data).msg === "reload") location.reload()
-}
-sockjs.onclose = function() { console.log('socket disconnected') }
+(function() {
+  var sockjs_url = '/echo'
+  var sockjs = new SockJS(sockjs_url)
+  
+  sockjs.onopen = function() { console.log('opened socket', sockjs.protocol) }
+  sockjs.onmessage = function(e) {
+    if(JSON.parse(e.data).msg === "reload") location.reload()
+  }
+  sockjs.onclose = function() { console.log('socket disconnected') }
+})()
 </script>
 `
 
@@ -61,7 +62,8 @@ export function run(config: JsxsConfig) {
     if(serverFs.existsSync(req.path)) res.send(serverFs.readFileSync(req.path))
     else if(serverFs.existsSync(req.path + ".html")) res.send(serverFs.readFileSync(req.path + ".html"))
     else if(serverFs.existsSync(req.path + "index.html")) res.send(serverFs.readFileSync(req.path + "index.html"))
-    else res.send("404 you doof")
+    else if(serverFs.existsSync("/404.html")) res.send(serverFs.readFileSync("404.html"))
+    else res.send("nice happy 404") //TODO: create a nice default 404 page
   })
   
   const httpServer = http.createServer(server)

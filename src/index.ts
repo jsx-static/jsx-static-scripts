@@ -5,6 +5,7 @@ import path from "path"
 import MemoryFileSystem from "memory-fs"
 import http from "http"
 import open from "open"
+//@ts-ignore // for some reason this isn't happy
 import { JsxsConfig } from "jsx-static/lib/config"
 import portFinder from "portfinder"
 
@@ -27,25 +28,22 @@ const sockInjection = `
 
 export function run(config: JsxsConfig) {
   const serverFs = new MemoryFileSystem()
-  
-  jsxs.build({
+
+  jsxs.watch({
     outputFs: serverFs,
     outputDir: "/",
     hooks: {
-      postEmit: () => {
-        portFinder.getPort((err, port) => {
-          if(err) console.error(err)
-          httpServer.listen(port, () => open(`http://localhost:${port}`))
-        })
-        jsxs.watch({
-          outputFs: serverFs,
-          outputDir: "/",
-          hooks: {
-            postProcess: src => src + sockInjection,
-            postEmit: () => connections.forEach(conn => conn.emit("data", { msg: "reload" }))
-          }
-        })
-      }
+      postProcess: src => src + sockInjection,
+      postSiteEmit: () => {
+        if(!httpServer.listening) {
+          portFinder.getPort((err, port) => {
+            if(err) console.error(err)
+            httpServer.listen(port, () => open(`http://localhost:${port}`))
+          })
+        }
+        connections.forEach(conn => conn.emit("data", { msg: "reload" }))
+      },
+      postDataEmit: () => connections.forEach(conn => conn.emit("data", { msg: "reload" }))
     }
   })
 

@@ -8,7 +8,7 @@ import open from "open"
 //@ts-ignore // for some reason this isn't happy
 import { JsxsConfig } from "jsx-static/lib/config"
 import portFinder from "portfinder"
-
+import clear from "clear"
 
 const sockInjection = `
 <script src="sockjs.min.js"></script>
@@ -19,7 +19,13 @@ const sockInjection = `
     
     sockjs.onopen = function() { console.log('opened socket', sockjs.protocol) }
     sockjs.onmessage = function(e) {
-      if(JSON.parse(e.data).msg === "reload") location.reload()
+      let data = JSON.parse(e.data)
+      if(data.msg === "reload") location.reload()
+      else if(data.msg === "error") {
+        let errText = document.createElement("p")
+        errText.style.fontFamily = "monospace"
+        document.body.appendChild(errText)
+      }
     }
     sockjs.onclose = function() { console.log('socket disconnected') }
   })()
@@ -42,6 +48,10 @@ export function run(config: JsxsConfig) {
             httpServer.listen(port, () => open(`http://localhost:${port}`))
           })
         }
+        clear()
+        console.log("*********************************")
+        console.log("*     compiled successfully     *")
+        console.log("*********************************")
         connections.forEach(conn => conn.emit("data", { msg: "reload" }))
       },
       postDataEmit: () => connections.forEach(conn => conn.emit("data", { msg: "reload" }))
@@ -51,6 +61,11 @@ export function run(config: JsxsConfig) {
   
   const echo = sockjsNode.createServer({ 
     prefix: "/echo",
+    log: (severity, msg) => {
+      if(severity === "error") {
+        console.error(msg)
+      }
+    }
   })
 
   const server = express()

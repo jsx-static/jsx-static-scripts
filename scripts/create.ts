@@ -99,8 +99,7 @@ export default props =>
 </html>
 `)
   fs.mkdirSync(path.join(createDir, opts.assetDir, "style"), { recursive: true })
-  fs.writeFileSync(path.join(createDir, opts.assetDir, "style", "style.scss"), `
-$background: #0c2461;
+  fs.writeFileSync(path.join(createDir, opts.assetDir, "style", "style.scss"), `$background: #1f212a;
 
 * {
   box-sizing: border-box;
@@ -114,8 +113,10 @@ body {
   justify-content: center;
   color: rgba(#fff, 0.85);
   background-color: $background;
+  overflow: hidden;
   h1 {
     font-size: 3rem;
+    font-family: sans-serif;
   }
 }
 `)

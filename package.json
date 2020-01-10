@@ -1,6 +1,6 @@
 {
   "name": "jsx-static-scripts",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -30,6 +30,8 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
+    "@types/clear": "^0.1.0",
+    "clear": "^0.1.0",
     "commander": "^4.1.0",
     "express": "^4.17.1",
     "jsx-static": "^1.1.1",

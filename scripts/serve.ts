@@ -60,9 +60,13 @@ export function run(config: JsxsConfig) {
   server.get("*", (req, res) => {
     res.type(path.extname(req.path) || "html")
     
+    //@ts-ignore
     if(mfs.existsSync(req.path) && mfs.statSync(req.path).isFile()) res.send(mfs.readFileSync(req.path))
+    //@ts-ignore
     else if(mfs.existsSync(req.path + ".html") && mfs.statSync(req.path + ".html").isFile()) res.send(mfs.readFileSync(req.path + ".html"))
+    //@ts-ignore
     else if(mfs.existsSync(req.path + "index.html") && mfs.statSync(req.path + "index.html").isFile()) res.send(mfs.readFileSync(req.path + "index.html"))
+    //@ts-ignore
     else if(mfs.existsSync("/404.html") && mfs.statSync("/404.html").isFile()) res.send(mfs.readFileSync("404.html"))
     else res.send("nice happy 404") //TODO: create a nice default 404 page
   })

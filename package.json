@@ -1,12 +1,15 @@
 {
   "name": "jsx-static-scripts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w"
+  },
+  "bin": {
+    "jsxs": "./lib/index.js"
   },
   "repository": {
     "type": "git",
@@ -27,7 +30,9 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
+    "commander": "^4.1.0",
     "express": "^4.17.1",
+    "jsx-static": "^1.1.1",
     "memfs": "^3.0.3",
     "memory-fs": "^0.5.0",
     "open": "^7.0.0",

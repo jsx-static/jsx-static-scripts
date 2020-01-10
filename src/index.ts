@@ -2,7 +2,7 @@ import express from "express"
 import sockjsNode from "sockjs"
 import jsxs from "jsx-static"
 import path from "path"
-import mfs, {vol} from "memfs"
+import mfs from "memfs"
 import http from "http"
 import open from "open"
 //@ts-ignore // for some reason this isn't happy
@@ -55,12 +55,11 @@ export function run(config: JsxsConfig) {
 
   const server = express()
   server.use(express.static(path.join(path.dirname(require.resolve("sockjs-client")), "..", "dist")))
-  server.use(express.static("/assets"))
+  server.use(express.static("./"))
   
   server.get("*", (req, res) => {
-    // res.setHeader("Content-Type", "text/html")
     res.type(path.extname(req.path) || "html")
-
+    
     if(mfs.existsSync(req.path) && mfs.statSync(req.path).isFile()) res.send(mfs.readFileSync(req.path))
     else if(mfs.existsSync(req.path + ".html") && mfs.statSync(req.path + ".html").isFile()) res.send(mfs.readFileSync(req.path + ".html"))
     else if(mfs.existsSync(req.path + "index.html") && mfs.statSync(req.path + "index.html").isFile()) res.send(mfs.readFileSync(req.path + "index.html"))
